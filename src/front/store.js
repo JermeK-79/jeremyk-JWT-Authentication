@@ -1,49 +1,50 @@
 export const initialStore = () => {
   return {
     token: sessionStorage.getItem("token") || null,
-    isSuccessfulLogin: sessionStorage.getItem("token") ? true : false,
-    errorMessage: ""
+    isLoginSuccessful: sessionStorage.getItem("token") ? true : false,
+    message: "",
+    isSignUpSuccessful: false,
+    errorMessage: "",
   }
 }
 
 export default function storeReducer(store, action = {}) {
   switch(action.type) {
-    case 'set_hello':
-      return {
-        ...store,
-        message: action.payload
-      };
-    
-    case 'add_task':
-      const { id, color } = action.payload
-      return {
-        ...store,
-        todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
-      };
-    
     case 'LOGIN_SUCCESS':
       return {
         ...store,
         token: action.payload.token,
-        isSuccessfulLogin: true,
+        isLoginSuccessful: true,
         errorMessage: ""
       };
-    
+
+    case ' successfulSignUp':
+      {
+        const { message, isSignUpSuccessful } = action.payload;
+        return {
+          ...store,
+          message: message,
+          isSignUpSuccessful: isSignUpSuccessful,
+        }
+      }
+    default:
+      throw Error('Unknown action.')
+
     case 'LOGIN_FAILURE':
+    case 'SIGNUP_FAILURE':
       return {
         ...store,
         token: null,
-        isSuccessfulLogin: false,
+        isLoginSuccessful: false,
         errorMessage: action.payload.message
       };
     
     case 'LOGOUT':
-      // Clear sessionStorage when logging out
       sessionStorage.removeItem("token");
       return {
         ...store,
         token: null,
-        isSuccessfulLogin: false,
+        isLoginSuccessful: false,
         errorMessage: ""
       };
     

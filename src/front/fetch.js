@@ -11,7 +11,6 @@ export const login = async(email, password, dispatch) => {
         })
     }
     
-    // FIXED: Changed from fetch`...` to fetch(...)
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/token`, options);
     
     if (!response.ok) {
@@ -41,4 +40,48 @@ export const login = async(email, password, dispatch) => {
         }
     });
     return data;
+}
+
+export const signUp = async(email, password, dispatch) => {
+    const options = {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password,
+        })
+    }
+    
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, options);
+    
+    if (!response.ok) {
+        const data = await response.json();
+        console.log(data.msg);
+        dispatch({
+            type: 'SIGNUP_FAILURE',
+            payload: {
+                message: data.msg || "Error creating account"
+            }
+        });
+        return {
+            error: {
+                status: response.status,
+                statusText: response.statusText,
+            }
+        }
+    }
+    
+    const data = await response.json();
+    console.log(data);
+   
+    dispatch({
+        type: 'successfulSignup',
+        payload: {
+            'message': data.message,
+            'isSignUpSuccessful': true,
+        }
+    });
+    return data; 
 }
