@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Invoice
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token
@@ -37,11 +37,9 @@ def generate_token():
 
 @api.route('/signup', methods=['POST'])
 def new_signup():
-    # FIXED: Removed parameters from function definition
     email = request.json.get("email", None)
     password = request.json.get("password", None)
     
-    # Validate that email and password were provided
     if not email or not password:
         return jsonify({"msg": "Email and password are required"}), 400
     
@@ -56,13 +54,12 @@ def new_signup():
     
     new_user = User()
     new_user.email = email
-    new_user.set_password(password)  # FIXED: Use set_password to hash the password
+    new_user.set_password(password)
     new_user.is_active = True
     
     db.session.add(new_user)
     db.session.commit()
     
-    # FIXED: Auto-login by creating token
     access_token = create_access_token(identity=new_user.id)
     
     response = {
@@ -71,3 +68,24 @@ def new_signup():
         "user_id": new_user.id
     }
     return jsonify(response), 201
+
+@api.route('/invoices', methods=['GET'])
+@jwt_required()
+def get_invoices():
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+    user_invoices = Invoice.query.filter_by(user_id=user_id).all()
+    processed_invoices = [each_invoice.serialize() for each_invoice in user_invoices]
+    
+    if len(processed_invoices) == 0:
+        response = {
+            "message": f'{user.email}, you have no invoices.',
+            "invoices": processed_invoices
+        }  
+        return jsonify(response), 200
+    
+    response = {
+        "message": f'Here are your invoices, {user.email}!',
+        "invoices": processed_invoices,
+    }
+    return jsonify(response), 200

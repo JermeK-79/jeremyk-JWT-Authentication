@@ -1,54 +1,65 @@
+import * as types from "./lib/actionTypes";
+
 export const initialStore = () => {
+  const token = sessionStorage.getItem("token");
+
   return {
-    token: sessionStorage.getItem("token") || null,
-    isLoginSuccessful: sessionStorage.getItem("token") ? true : false,
+    token: token || null,
+    isLoggedIn: !!token,
     message: "",
-    isSignUpSuccessful: false,
     errorMessage: "",
-  }
-}
+  };
+};
 
 export default function storeReducer(store, action = {}) {
-  switch(action.type) {
-    case 'LOGIN_SUCCESS':
+  switch (action.type) {
+    case types.LOGIN_SUCCESS:
+    case types.SIGNUP_SUCCESS:
       return {
         ...store,
         token: action.payload.token,
-        isLoginSuccessful: true,
-        errorMessage: ""
+        isLoggedIn: true,
+        message: action.payload.message || "Success!",
+        errorMessage: "",
       };
 
-    case ' successfulSignUp':
-      {
-        const { message, isSignUpSuccessful } = action.payload;
-        return {
-          ...store,
-          message: message,
-          isSignUpSuccessful: isSignUpSuccessful,
-        }
-      }
-    default:
-      throw Error('Unknown action.')
-
-    case 'LOGIN_FAILURE':
-    case 'SIGNUP_FAILURE':
+    case types.LOGIN_FAILURE:
+    case types.SIGNUP_FAILURE:
       return {
         ...store,
         token: null,
-        isLoginSuccessful: false,
-        errorMessage: action.payload.message
+        isLoggedIn: false,
+        errorMessage: action.payload.message,
       };
-    
-    case 'LOGOUT':
-      sessionStorage.removeItem("token");
+
+    case types.LOGOUT:
       return {
         ...store,
         token: null,
-        isLoginSuccessful: false,
-        errorMessage: ""
+        isLoggedIn: false,
+        message: "",
+        errorMessage: "",
       };
-    
+
+    case types.SET_ERROR:
+      return {
+        ...store,
+        errorMessage: action.payload,
+      };
+
+    case types.CLEAR_ERROR:
+      return {
+        ...store,
+        errorMessage: "",
+      };
+
+    case types.CLEAR_MESSAGE:
+      return {
+        ...store,
+        message: "",
+      };
+
     default:
       return store;
-  }    
+  }
 }
