@@ -13,23 +13,23 @@ export const SignUp = () => {
 
     const handleSignUpSubmit = async (e) => {
         e.preventDefault();
-
+        
         if (!email || !password) {
             dispatch({
-                type: types.SET_ERROR,
+                type: types.setError,
                 payload: "Please fill in all fields"
             });
             return;
         }
-
+        
         if (password.length < 6) {
             dispatch({
-                type: types.SET_ERROR,
+                type: types.setError,
                 payload: "Password must be at least 6 characters"
             });
             return;
         }
-
+        
         setIsLoading(true);
         try {
             await signUp(email, password, dispatch);
@@ -52,13 +52,11 @@ export const SignUp = () => {
                 <div className="row justify-content-center">
                     <div className="col-md-6 col-lg-4">
                         <h1 className="mb-4">Sign Up</h1>
-
                         {store.errorMessage && (
                             <div className="alert alert-danger" role="alert">
                                 {store.errorMessage}
                             </div>
                         )}
-
                         <form onSubmit={handleSignUpSubmit}>
                             <div className="mb-3">
                                 <input
@@ -71,7 +69,6 @@ export const SignUp = () => {
                                     disabled={isLoading}
                                 />
                             </div>
-
                             <div className="mb-3">
                                 <input
                                     type="password"
@@ -87,7 +84,6 @@ export const SignUp = () => {
                                     Password must be at least 6 characters
                                 </small>
                             </div>
-
                             <div className="mb-3">
                                 <button
                                     type="submit"
@@ -98,7 +94,6 @@ export const SignUp = () => {
                                 </button>
                             </div>
                         </form>
-
                         <div className="mt-3">
                             <p>Already have an account? <Link to="/login">Login</Link></p>
                         </div>

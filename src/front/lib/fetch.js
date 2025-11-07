@@ -12,17 +12,15 @@ export const login = async (email, password, dispatch) => {
         password: password,
       }),
     };
-
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/token`,
       options
     );
-
     if (!response.ok) {
       const data = await response.json();
       console.log(data.msg);
       dispatch({
-        type: types.LOGIN_FAILURE,
+        type: types.loginFailure,
         payload: {
           message: data.msg || "Bad username or password",
         },
@@ -34,23 +32,20 @@ export const login = async (email, password, dispatch) => {
         },
       };
     }
-
     const data = await response.json();
     console.log(data.access_token);
     sessionStorage.setItem("token", data.access_token);
-
     dispatch({
-      type: types.LOGIN_SUCCESS,
+      type: types.loginSuccess,
       payload: {
         token: data.access_token,
       },
     });
-
     return data;
   } catch (error) {
     console.error("Login error:", error);
     dispatch({
-      type: types.LOGIN_FAILURE,
+      type: types.loginFailure,
       payload: {
         message: "Network error. Please try again.",
       },
@@ -75,17 +70,15 @@ export const signUp = async (email, password, dispatch) => {
         password: password,
       }),
     };
-
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/signup`,
       options
     );
-
     if (!response.ok) {
       const data = await response.json();
       console.log(data.msg);
       dispatch({
-        type: types.SIGNUP_FAILURE,
+        type: types.signupFailure,
         payload: {
           message: data.msg || "Error creating account",
         },
@@ -97,27 +90,23 @@ export const signUp = async (email, password, dispatch) => {
         },
       };
     }
-
     const data = await response.json();
     console.log(data);
-
     if (data.access_token) {
       sessionStorage.setItem("token", data.access_token);
     }
-
     dispatch({
-      type: types.SIGNUP_SUCCESS,
+      type: types.signupSuccess,
       payload: {
         message: data.message,
         token: data.access_token,
       },
     });
-
     return data;
   } catch (error) {
     console.error("Signup error:", error);
     dispatch({
-      type: types.SIGNUP_FAILURE,
+      type: types.signupFailure,
       payload: {
         message: "Network error. Please try again.",
       },
@@ -133,7 +122,7 @@ export const signUp = async (email, password, dispatch) => {
 export const logout = (dispatch) => {
   sessionStorage.removeItem("token");
   dispatch({
-    type: types.LOGOUT, 
+    type: types.logout,
     payload: {
       token: null,
       isLoggedIn: false,

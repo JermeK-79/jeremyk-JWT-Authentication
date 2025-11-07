@@ -14,15 +14,14 @@ export const Login = () => {
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         
-        // Basic validation
         if (!email || !password) {
             dispatch({
-                type: types.SET_ERROR,
+                type: types.setError,
                 payload: "Please fill in all fields"
             });
             return;
         }
-
+        
         setIsLoading(true);
         try {
             await login(email, password, dispatch);
@@ -54,13 +53,11 @@ export const Login = () => {
                         ) : (
                             <>
                                 <h1 className="mb-4">Login</h1>
-                                
                                 {store.errorMessage && (
                                     <div className="alert alert-danger" role="alert">
                                         {store.errorMessage}
                                     </div>
                                 )}
-
                                 <form onSubmit={handleLoginSubmit}>
                                     <div className="mb-3">
                                         <input
@@ -73,7 +70,6 @@ export const Login = () => {
                                             disabled={isLoading}
                                         />
                                     </div>
-
                                     <div className="mb-3">
                                         <input
                                             type="password"
@@ -85,7 +81,6 @@ export const Login = () => {
                                             disabled={isLoading}
                                         />
                                     </div>
-
                                     <div className="mb-3">
                                         <button
                                             type="submit"
@@ -103,7 +98,6 @@ export const Login = () => {
                                         </button>
                                     </div>
                                 </form>
-
                                 <div className="mt-3">
                                     <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
                                 </div>

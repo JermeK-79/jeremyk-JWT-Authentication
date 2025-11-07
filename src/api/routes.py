@@ -12,11 +12,14 @@ from flask_jwt_extended import jwt_required
 api = Blueprint('api', __name__)
 CORS(api)
 
-
 @api.route('/token', methods=['POST'])
 def generate_token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
+    
+    if not email or not password:
+        return jsonify({"msg": "Email and password are required"}), 400
+    
     email = email.lower()
     user = User.query.filter_by(email=email).first()
     
@@ -34,7 +37,6 @@ def generate_token():
     }
     return jsonify(response), 200
 
-
 @api.route('/signup', methods=['POST'])
 def new_signup():
     email = request.json.get("email", None)
@@ -50,7 +52,7 @@ def new_signup():
         response = {
             "msg": f'{email} already exists. Please login.'
         }
-        return jsonify(response), 403
+        return jsonify(response), 409
     
     new_user = User()
     new_user.email = email
@@ -61,7 +63,6 @@ def new_signup():
     db.session.commit()
     
     access_token = create_access_token(identity=new_user.id)
-    
     response = {
         "msg": f'{new_user.email} was successfully added!',
         "access_token": access_token,
@@ -74,18 +75,15 @@ def new_signup():
 def get_invoices():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()
+
+    if user is None:
+        return jsonify({"msg": "User not found"}), 404
+    
     user_invoices = Invoice.query.filter_by(user_id=user_id).all()
     processed_invoices = [each_invoice.serialize() for each_invoice in user_invoices]
     
-    if len(processed_invoices) == 0:
-        response = {
-            "message": f'{user.email}, you have no invoices.',
-            "invoices": processed_invoices
-        }  
-        return jsonify(response), 200
-    
     response = {
-        "message": f'Here are your invoices, {user.email}!',
+        "message": f'Here are your invoices, {user.email}!' if processed_invoices else f'{user.email}, you have no invoices.',
         "invoices": processed_invoices,
     }
     return jsonify(response), 200
