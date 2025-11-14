@@ -9,6 +9,7 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
     invoice_list: Mapped[list["Invoice"]] = relationship(back_populates="user")
 
     def serialize(self):
@@ -17,19 +18,17 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
-
 class Invoice(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     invoice_date: Mapped[str] = mapped_column(String(60), nullable=False)
     invoice_number: Mapped[str] = mapped_column(String(60), nullable=False)
     invoice_amount: Mapped[float] = mapped_column(Float(), nullable=False)
+
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates='invoice_list')
-
     def serialize(self):
-        return {
-            "id": self.id,
+        return{
             "invoice_date": self.invoice_date,
-            "invoice_number": self.invoice_number,
+            "invoice_number": self.invoice_amount,
             "invoice_amount": self.invoice_amount,
         }

@@ -67,4 +67,5 @@ export const signUp = async(email, password, dispatch) => {
     })
     console.log(data)
     return data;
+
 }

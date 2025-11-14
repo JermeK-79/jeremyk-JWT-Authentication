@@ -1,69 +1,63 @@
-import { useState,useEffect } from "react";
-import { Navigate, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { login } from "../fetch";
 
-export const Login= () => {
-    const[email,setEmail]= useState("");
-    const[password, setPassword] = useState("");
+export const Login = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const{store,dispatch} = useGlobalReducer();
+    const { store, dispatch } = useGlobalReducer();
 
-    const handleLoginClick = () =>{
-        login(email,password,dispatch)
-    }
+    const handleLoginClick = async () => {
+        await login(email, password, dispatch);
+    };
 
-     useEffect(() => {
+    useEffect(() => {
         if (store.isLoginSuccessful) {
-            navigate('/Private');
+            navigate("/Private");
         }
-        
-    }, [store.isLoginSuccessful]);
-
+    }, [store.isLoginSuccessful, navigate]);
 
     return (
-        <>
-            <div className="login-page">
-                {
-                    (store.token && store.token != undefined && store.token != "")
-                        ?
-                        (<>
+        <div className="login-page">
+            {store.token
+                ? (
+                    <>
                         <h1>Hello! You are logged in</h1>
-                        <div>(store.token)</div>
-                        </>)
-                        :
-                        (
-                            <>
-                            <div className="loginscreen text-center mt-5">
-                            <h1>Login </h1>
-                            <div>
-                                <input
-                                    type="text"
-                                    placeholder="Enter email"
-                                    value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                    />
-                            </div>
-                            <div>
-                                <input
-                                    type="password"
-                                    placeholder="Enter password"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                    />
-                            </div>
-                            <div>
-                                <button
-                                    onClick={handleLoginClick}
-                                >
-                                    Login
-                                </button>
-                            </div>
-                            </div>
-                            </>
-                        )
-                }
-            </div>
-        </>
-    )
-}
+                        <div>{store.token}</div>
+                    </>
+                )
+                : (
+                    <div className="loginscreen text-center mt-5">
+                        <h1>Login</h1>
+
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Enter email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+
+                        <div>
+                            <input
+                                type="password"
+                                placeholder="Enter password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+
+                        <div>
+                            <button onClick={handleLoginClick}>
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
+        </div>
+    );
+};

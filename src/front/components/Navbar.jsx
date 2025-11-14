@@ -5,7 +5,7 @@ export const Navbar = ({ dispatch }) => {
 
 	return (
 		<nav className="navbar navbar-light bg-light">
-			<div className="container">
+			<div className="container d-flex">
 				<Link to = "/signup">
 					<button className="btn btn-primary">
 						Signup
