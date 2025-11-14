@@ -1,7 +1,7 @@
 export const initialStore=()=>{
   return{
     token: null,
-    isLoginSuccessful: false,
+    isLoggedIn: false,
     message: '',
     isSignUpSuccessful: false,
   }
@@ -11,22 +11,21 @@ export default function storeReducer(store, action = {}) {
   switch(action.type){
     case 'fetchedToken':
       {
-        const{token, isLoginSuccessful} = action.payload;
+        const{token} = action.payload;
         return{
           ...store,
           token: token,
-          isLoginSuccessful: isLoginSuccessful,
+          isLoggedIn: true,
         }
       }
     case 'removedToken':
-    {
-      const{token, isLoginSuccessful} = action.payload;
+      {
         return{
           ...store,
           token: null,
-          isLoginSuccessful: false,
+          isLoggedIn: false,
+        }
       }
-    }
     case 'successfulSignUp':
       {
         const {message, isSignUpSuccessful} = action.payload;

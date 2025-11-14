@@ -1,5 +1,5 @@
-export const login = async(email,password,dispatch) => {
-    const options= {
+export const login = async(email, password, dispatch) => {
+    const options = {
         method: 'POST',
         headers: {
             "Content-Type": 'application/json'
@@ -9,8 +9,7 @@ export const login = async(email,password,dispatch) => {
             password: password,
         })
     }
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/token`,options)
-
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/token`, options)
     if (!response.ok){
         const data = await response.json();
         console.log(data.msg);
@@ -21,21 +20,19 @@ export const login = async(email,password,dispatch) => {
             }
         }
     }
-
     const data = await response.json();
     sessionStorage.setItem('token', data.access_token);
     dispatch({
         type: 'fetchedToken',
         payload: {
             token: data.access_token,
-            isLoginSuccessful: true,
         }
     })
-   
     return data;
 }
+
 export const signUp = async(email, password, dispatch) => {
-    const options= {
+    const options = {
         method: 'POST',
         headers: {
             "Content-Type": 'application/json'
@@ -45,8 +42,7 @@ export const signUp = async(email, password, dispatch) => {
             password: password,
         })
     }
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`,options)
-
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, options)
     if (!response.ok){
         const data = await response.json();
         console.log(data.message);
@@ -67,5 +63,31 @@ export const signUp = async(email, password, dispatch) => {
     })
     console.log(data)
     return data;
-
 }
+
+export const logout = (dispatch) => {
+    sessionStorage.removeItem('token');
+    dispatch({
+        type: 'removedToken',
+        payload: {
+            token: null,
+        }
+    });
+}
+
+export const getInvoices = async (token) => {
+    const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/invoices`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token
+            }
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to fetch invoices");
+    }
+    return response.json();
+};
